@@ -9,6 +9,10 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import Reviews from '@/components/Reviews';
+import Archive from '@/components/Archive';
+import Guides from '@/components/Guides';
+import Stats from '@/components/Stats';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,6 +34,10 @@ const Index = () => {
   const [projectType, setProjectType] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [contactInfo, setContactInfo] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+  const [projectRequirements, setProjectRequirements] = useState('');
 
   const services = [
     {
@@ -160,6 +168,9 @@ const Index = () => {
             <a href="#services" className="text-muted-foreground hover:text-primary transition-colors">Услуги</a>
             <a href="#portfolio" className="text-muted-foreground hover:text-primary transition-colors">Портфолио</a>
             <a href="#generators" className="text-muted-foreground hover:text-primary transition-colors">Генераторы</a>
+            <a href="#reviews" className="text-muted-foreground hover:text-primary transition-colors">Отзывы</a>
+            <a href="#archive" className="text-muted-foreground hover:text-primary transition-colors">Архив</a>
+            <a href="#guides" className="text-muted-foreground hover:text-primary transition-colors">Гайды</a>
             <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Заявка</a>
           </div>
           
@@ -176,6 +187,10 @@ const Index = () => {
                 <DialogDescription>Получите доступ к панели управления заказами</DialogDescription>
               </DialogHeader>
               <div className="space-y-4 mt-4">
+                <div>
+                  <Label htmlFor="display-name">Отображаемое имя</Label>
+                  <Input id="display-name" type="text" placeholder="MasterCraft" className="mt-2" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                </div>
                 <div>
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" placeholder="admin@rikawastudio.com" className="mt-2" />
@@ -202,7 +217,7 @@ const Index = () => {
             Цифровая студия для Minecraft
           </Badge>
           
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 text-glow">
+          <h2 className="text-5xl md:text-7xl font-bold mb-6 text-glow minecraft-text">
             Создаём системы,<br />
             <span className="text-primary">не шаблоны</span>
           </h2>
@@ -292,6 +307,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      <Stats />
+      <Reviews />
 
       <section id="generators" className="py-20 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
         <div className="container mx-auto px-4">
@@ -539,6 +557,17 @@ const Index = () => {
                 </div>
                 
                 <div>
+                  <Label htmlFor="project-requirements">Опишите ваши пожелания (обязательно)</Label>
+                  <Textarea 
+                    id="project-requirements" 
+                    placeholder="Подробно опишите, что вам нужно..." 
+                    className="mt-2 min-h-24"
+                    value={projectRequirements}
+                    onChange={(e) => setProjectRequirements(e.target.value)}
+                  />
+                </div>
+                
+                <div>
                   <Label htmlFor="project-description">Описание проекта</Label>
                   <Textarea 
                     id="project-description" 
@@ -647,6 +676,9 @@ const Index = () => {
           </div>
         </section>
       )}
+
+      <Archive />
+      <Guides />
 
       <footer className="py-12 border-t border-primary/20 mt-20">
         <div className="container mx-auto px-4">
