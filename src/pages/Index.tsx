@@ -6,12 +6,30 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
 
 const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [gradientText, setGradientText] = useState('');
   const [generatedGradient, setGeneratedGradient] = useState('');
+  
+  const [commandType, setCommandType] = useState('give');
+  const [itemName, setItemName] = useState('diamond');
+  const [itemAmount, setItemAmount] = useState('1');
+  const [playerName, setPlayerName] = useState('@p');
+  const [generatedCommand, setGeneratedCommand] = useState('');
+  
+  const [configName, setConfigName] = useState('');
+  const [configValue, setConfigValue] = useState('');
+  const [configEntries, setConfigEntries] = useState<Array<{key: string, value: string}>>([]);
+  const [generatedConfig, setGeneratedConfig] = useState('');
+  
+  const [projectName, setProjectName] = useState('');
+  const [projectType, setProjectType] = useState('');
+  const [projectDescription, setProjectDescription] = useState('');
+  const [contactInfo, setContactInfo] = useState('');
 
   const services = [
     {
@@ -59,6 +77,71 @@ const Index = () => {
     
     setGeneratedGradient(result);
   };
+  
+  const generateCommand = () => {
+    let cmd = '';
+    switch(commandType) {
+      case 'give':
+        cmd = `/give ${playerName} minecraft:${itemName} ${itemAmount}`;
+        break;
+      case 'tp':
+        cmd = `/tp ${playerName} ~ ~ ~`;
+        break;
+      case 'summon':
+        cmd = `/summon minecraft:${itemName} ~ ~ ~`;
+        break;
+      case 'effect':
+        cmd = `/effect give ${playerName} minecraft:${itemName} 60 1`;
+        break;
+    }
+    setGeneratedCommand(cmd);
+  };
+  
+  const addConfigEntry = () => {
+    if (!configName || !configValue) return;
+    setConfigEntries([...configEntries, { key: configName, value: configValue }]);
+    setConfigName('');
+    setConfigValue('');
+  };
+  
+  const generateConfig = () => {
+    let yaml = '# Конфигурация плагина\n\n';
+    configEntries.forEach(entry => {
+      yaml += `${entry.key}: ${entry.value}\n`;
+    });
+    setGeneratedConfig(yaml);
+  };
+  
+  const portfolioProjects = [
+    {
+      title: 'Система кланов для RPG сервера',
+      category: 'Плагин',
+      description: 'Полноценная система кланов с войнами, территориями и экономикой',
+      tech: ['Java', 'MySQL', 'Spigot API'],
+      image: '🏰'
+    },
+    {
+      title: 'Донат-магазин с личным кабинетом',
+      category: 'Веб-сайт',
+      description: 'Современный веб-сайт с интеграцией платёжных систем и статистикой игроков',
+      tech: ['React', 'Node.js', 'PostgreSQL'],
+      image: '💎'
+    },
+    {
+      title: 'Discord бот для модерации',
+      category: 'Бот',
+      description: 'Автоматизация модерации, логирование событий, система предупреждений',
+      tech: ['Python', 'Discord.py', 'SQLite'],
+      image: '🤖'
+    },
+    {
+      title: 'Генератор данжей',
+      category: 'Плагин',
+      description: 'Процедурная генерация подземелий с уникальными боссами и наградами',
+      tech: ['Java', 'WorldEdit API', 'Custom AI'],
+      image: '⚔️'
+    }
+  ];
 
   return (
     <div className="min-h-screen bg-[#0A0A0F] text-foreground">
@@ -75,8 +158,9 @@ const Index = () => {
           
           <div className="hidden md:flex items-center gap-6">
             <a href="#services" className="text-muted-foreground hover:text-primary transition-colors">Услуги</a>
+            <a href="#portfolio" className="text-muted-foreground hover:text-primary transition-colors">Портфолио</a>
             <a href="#generators" className="text-muted-foreground hover:text-primary transition-colors">Генераторы</a>
-            <a href="#about" className="text-muted-foreground hover:text-primary transition-colors">О нас</a>
+            <a href="#contact" className="text-muted-foreground hover:text-primary transition-colors">Заявка</a>
           </div>
           
           <Dialog>
@@ -174,6 +258,41 @@ const Index = () => {
         </div>
       </section>
 
+      <section id="portfolio" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-bold mb-4">Портфолио</h3>
+            <p className="text-muted-foreground text-lg">Примеры наших работ для Minecraft-проектов</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+            {portfolioProjects.map((project, index) => (
+              <Card key={index} className="bg-card/50 border-primary/20 hover:border-primary/50 transition-all hover:box-glow group">
+                <CardHeader>
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="text-5xl">{project.image}</div>
+                    <Badge variant="outline" className="border-primary/30 text-primary">
+                      {project.category}
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-xl">{project.title}</CardTitle>
+                  <CardDescription className="text-base">{project.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((tech, i) => (
+                      <Badge key={i} variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section id="generators" className="py-20 bg-gradient-to-b from-transparent via-primary/5 to-transparent">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -181,38 +300,270 @@ const Index = () => {
             <p className="text-muted-foreground text-lg">Практические инструменты для администраторов</p>
           </div>
           
-          <Card className="bg-card/80 border-primary/20 max-w-3xl mx-auto">
+          <Tabs defaultValue="gradient" className="max-w-4xl mx-auto">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="gradient">
+                <Icon name="Sparkles" size={16} className="mr-2" />
+                Градиенты
+              </TabsTrigger>
+              <TabsTrigger value="commands">
+                <Icon name="Terminal" size={16} className="mr-2" />
+                Команды
+              </TabsTrigger>
+              <TabsTrigger value="config">
+                <Icon name="FileCode" size={16} className="mr-2" />
+                Конфиги
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="gradient" className="mt-6">
+              <Card className="bg-card/80 border-primary/20">
+                <CardHeader>
+                  <CardTitle>Генератор градиентов</CardTitle>
+                  <CardDescription>Создавайте красивые градиентные тексты для табличек, книг и чата</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="gradient-text">Введите текст</Label>
+                      <Input 
+                        id="gradient-text" 
+                        placeholder="RikawaStudio" 
+                        className="mt-2 font-mono"
+                        value={gradientText}
+                        onChange={(e) => setGradientText(e.target.value)}
+                      />
+                    </div>
+                    
+                    <Button onClick={generateGradient} className="w-full bg-primary hover:bg-primary/90">
+                      <Icon name="Sparkles" size={16} className="mr-2" />
+                      Сгенерировать градиент
+                    </Button>
+                    
+                    {generatedGradient && (
+                      <div className="p-4 bg-secondary rounded-lg border border-primary/20">
+                        <Label className="text-xs text-muted-foreground mb-2 block">Результат:</Label>
+                        <code className="text-sm text-[#10B981] font-mono break-all">{generatedGradient}</code>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="commands" className="mt-6">
+              <Card className="bg-card/80 border-primary/20">
+                <CardHeader>
+                  <CardTitle>Генератор команд Minecraft</CardTitle>
+                  <CardDescription>Быстрое создание команд для плагинов и датапаков</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="command-type">Тип команды</Label>
+                      <Select value={commandType} onValueChange={setCommandType}>
+                        <SelectTrigger className="mt-2">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="give">Give (Выдать предмет)</SelectItem>
+                          <SelectItem value="tp">Teleport (Телепорт)</SelectItem>
+                          <SelectItem value="summon">Summon (Призвать моба)</SelectItem>
+                          <SelectItem value="effect">Effect (Эффект)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="player-name">Игрок</Label>
+                        <Input 
+                          id="player-name" 
+                          placeholder="@p" 
+                          className="mt-2 font-mono"
+                          value={playerName}
+                          onChange={(e) => setPlayerName(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="item-name">Предмет/Моб</Label>
+                        <Input 
+                          id="item-name" 
+                          placeholder="diamond" 
+                          className="mt-2 font-mono"
+                          value={itemName}
+                          onChange={(e) => setItemName(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    {commandType === 'give' && (
+                      <div>
+                        <Label htmlFor="item-amount">Количество</Label>
+                        <Input 
+                          id="item-amount" 
+                          placeholder="1" 
+                          className="mt-2 font-mono"
+                          value={itemAmount}
+                          onChange={(e) => setItemAmount(e.target.value)}
+                        />
+                      </div>
+                    )}
+                    
+                    <Button onClick={generateCommand} className="w-full bg-primary hover:bg-primary/90">
+                      <Icon name="Terminal" size={16} className="mr-2" />
+                      Сгенерировать команду
+                    </Button>
+                    
+                    {generatedCommand && (
+                      <div className="p-4 bg-secondary rounded-lg border border-primary/20">
+                        <Label className="text-xs text-muted-foreground mb-2 block">Результат:</Label>
+                        <code className="text-sm text-[#10B981] font-mono break-all">{generatedCommand}</code>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="config" className="mt-6">
+              <Card className="bg-card/80 border-primary/20">
+                <CardHeader>
+                  <CardTitle>Генератор конфигов (YAML)</CardTitle>
+                  <CardDescription>Создание конфигурационных файлов для плагинов</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="config-name">Ключ</Label>
+                        <Input 
+                          id="config-name" 
+                          placeholder="max-players" 
+                          className="mt-2 font-mono"
+                          value={configName}
+                          onChange={(e) => setConfigName(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="config-value">Значение</Label>
+                        <Input 
+                          id="config-value" 
+                          placeholder="100" 
+                          className="mt-2 font-mono"
+                          value={configValue}
+                          onChange={(e) => setConfigValue(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button onClick={addConfigEntry} variant="outline" className="w-full border-primary/50">
+                      <Icon name="Plus" size={16} className="mr-2" />
+                      Добавить параметр
+                    </Button>
+                    
+                    {configEntries.length > 0 && (
+                      <div className="p-4 bg-secondary/50 rounded-lg border border-primary/20">
+                        <Label className="text-xs text-muted-foreground mb-2 block">Добавленные параметры:</Label>
+                        <div className="space-y-1">
+                          {configEntries.map((entry, i) => (
+                            <div key={i} className="text-sm font-mono">
+                              <span className="text-primary">{entry.key}</span>: {entry.value}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <Button onClick={generateConfig} className="w-full bg-primary hover:bg-primary/90" disabled={configEntries.length === 0}>
+                      <Icon name="FileCode" size={16} className="mr-2" />
+                      Сгенерировать конфиг
+                    </Button>
+                    
+                    {generatedConfig && (
+                      <div className="p-4 bg-secondary rounded-lg border border-primary/20">
+                        <Label className="text-xs text-muted-foreground mb-2 block">Результат (config.yml):</Label>
+                        <pre className="text-sm text-[#10B981] font-mono whitespace-pre-wrap">{generatedConfig}</pre>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+      </section>
+
+      <section id="contact" className="py-20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h3 className="text-4xl font-bold mb-4">Начать проект</h3>
+            <p className="text-muted-foreground text-lg">Отправьте заявку, и мы свяжемся с вами в течение 24 часов</p>
+          </div>
+          
+          <Card className="bg-card/80 border-primary/20 max-w-2xl mx-auto box-glow">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Icon name="Wand2" className="text-primary" />
-                Генератор градиентов для Minecraft
+                <Icon name="Rocket" className="text-primary" />
+                Форма заявки
               </CardTitle>
-              <CardDescription>Создавайте красивые градиентные тексты для табличек, книг и чата</CardDescription>
+              <CardDescription>Расскажите о вашем проекте</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="gradient-text">Введите текст</Label>
+                  <Label htmlFor="project-name">Название проекта</Label>
                   <Input 
-                    id="gradient-text" 
-                    placeholder="RikawaStudio" 
-                    className="mt-2 font-mono"
-                    value={gradientText}
-                    onChange={(e) => setGradientText(e.target.value)}
+                    id="project-name" 
+                    placeholder="Мой сервер" 
+                    className="mt-2"
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
                   />
                 </div>
                 
-                <Button onClick={generateGradient} className="w-full bg-primary hover:bg-primary/90">
-                  <Icon name="Sparkles" size={16} className="mr-2" />
-                  Сгенерировать градиент
-                </Button>
+                <div>
+                  <Label htmlFor="project-type">Тип заказа</Label>
+                  <Select value={projectType} onValueChange={setProjectType}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Выберите тип" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="plugin">Разработка плагина</SelectItem>
+                      <SelectItem value="website">Веб-сайт</SelectItem>
+                      <SelectItem value="bot">Discord бот</SelectItem>
+                      <SelectItem value="design">Дизайн</SelectItem>
+                      <SelectItem value="other">Другое</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 
-                {generatedGradient && (
-                  <div className="p-4 bg-secondary rounded-lg border border-primary/20">
-                    <Label className="text-xs text-muted-foreground mb-2 block">Результат:</Label>
-                    <code className="text-sm text-[#10B981] font-mono break-all">{generatedGradient}</code>
-                  </div>
-                )}
+                <div>
+                  <Label htmlFor="project-description">Описание проекта</Label>
+                  <Textarea 
+                    id="project-description" 
+                    placeholder="Опишите, что вам нужно создать..." 
+                    className="mt-2 min-h-32"
+                    value={projectDescription}
+                    onChange={(e) => setProjectDescription(e.target.value)}
+                  />
+                </div>
+                
+                <div>
+                  <Label htmlFor="contact-info">Контакты (Telegram, Discord, Email)</Label>
+                  <Input 
+                    id="contact-info" 
+                    placeholder="@username или email" 
+                    className="mt-2"
+                    value={contactInfo}
+                    onChange={(e) => setContactInfo(e.target.value)}
+                  />
+                </div>
+                
+                <Button className="w-full bg-primary hover:bg-primary/90 text-white" size="lg">
+                  <Icon name="Send" size={16} className="mr-2" />
+                  Отправить заявку
+                </Button>
               </div>
             </CardContent>
           </Card>
