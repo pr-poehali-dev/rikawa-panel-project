@@ -4,9 +4,9 @@ import Icon from '@/components/ui/icon';
 
 const Stats = () => {
   const stats = [
-    { icon: 'CheckCircle2', value: '127', label: 'Выполненных заказов', color: 'text-[#10B981]' },
-    { icon: 'Zap', value: '18', label: 'Проектов в разработке', color: 'text-yellow-500' },
-    { icon: 'Users', value: '89', label: 'Довольных клиентов', color: 'text-primary' },
+    { icon: 'CheckCircle2', value: '4', label: 'Выполненных заказов', color: 'text-[#10B981]' },
+    { icon: 'Zap', value: '2', label: 'Проектов в разработке', color: 'text-yellow-500' },
+    { icon: 'Users', value: '6', label: 'Довольных клиентов', color: 'text-primary' },
     { icon: 'Clock', value: '~14 дней', label: 'Средний срок разработки', color: 'text-blue-500' }
   ];
 

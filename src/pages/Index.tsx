@@ -18,6 +18,8 @@ const Index = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [gradientText, setGradientText] = useState('');
   const [generatedGradient, setGeneratedGradient] = useState('');
+  const [gradientColor1, setGradientColor1] = useState('#8B5CF6');
+  const [gradientColor2, setGradientColor2] = useState('#10B981');
   
   const [commandType, setCommandType] = useState('give');
   const [itemName, setItemName] = useState('diamond');
@@ -34,6 +36,7 @@ const Index = () => {
   const [projectType, setProjectType] = useState('');
   const [projectDescription, setProjectDescription] = useState('');
   const [contactInfo, setContactInfo] = useState('');
+  const [contactMethod, setContactMethod] = useState('telegram');
   const [displayName, setDisplayName] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -74,13 +77,24 @@ const Index = () => {
 
   const generateGradient = () => {
     if (!gradientText) return;
-    const colors = ['#8B5CF6', '#D946EF', '#10B981', '#0EA5E9'];
     const chars = gradientText.split('');
     let result = '';
     
     chars.forEach((char, i) => {
-      const colorIndex = Math.floor((i / chars.length) * colors.length);
-      result += `<gradient:${colors[colorIndex]}>${char}`;
+      const ratio = i / (chars.length - 1);
+      const r1 = parseInt(gradientColor1.slice(1, 3), 16);
+      const g1 = parseInt(gradientColor1.slice(3, 5), 16);
+      const b1 = parseInt(gradientColor1.slice(5, 7), 16);
+      const r2 = parseInt(gradientColor2.slice(1, 3), 16);
+      const g2 = parseInt(gradientColor2.slice(3, 5), 16);
+      const b2 = parseInt(gradientColor2.slice(5, 7), 16);
+      
+      const r = Math.round(r1 + (r2 - r1) * ratio);
+      const g = Math.round(g1 + (g2 - g1) * ratio);
+      const b = Math.round(b1 + (b2 - b1) * ratio);
+      const hexColor = `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+      
+      result += `<gradient:${hexColor}>${char}`;
     });
     
     setGeneratedGradient(result);
@@ -100,6 +114,24 @@ const Index = () => {
         break;
       case 'effect':
         cmd = `/effect give ${playerName} minecraft:${itemName} 60 1`;
+        break;
+      case 'luckperms-group':
+        cmd = `/lp user ${playerName} parent add ${itemName}`;
+        break;
+      case 'luckperms-perm':
+        cmd = `/lp user ${playerName} permission set ${itemName} true`;
+        break;
+      case 'essentials-home':
+        cmd = `/sethome ${itemName}`;
+        break;
+      case 'worldedit-set':
+        cmd = `//set minecraft:${itemName}`;
+        break;
+      case 'worldguard-region':
+        cmd = `/rg define ${itemName}`;
+        break;
+      case 'gamemode':
+        cmd = `/gamemode ${itemName} ${playerName}`;
         break;
     }
     setGeneratedCommand(cmd);
@@ -228,11 +260,11 @@ const Index = () => {
           </p>
           
           <div className="flex gap-4 justify-center flex-wrap">
-            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 box-glow">
+            <Button size="lg" className="bg-primary hover:bg-primary/90 text-white px-8 box-glow" onClick={() => document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })}>
               <Icon name="Rocket" size={20} className="mr-2" />
               Начать проект
             </Button>
-            <Button size="lg" variant="outline" className="border-primary/50 hover:bg-primary/10">
+            <Button size="lg" variant="outline" className="border-primary/50 hover:bg-primary/10" onClick={() => document.getElementById('generators')?.scrollIntoView({ behavior: 'smooth' })}>
               <Icon name="FileCode" size={20} className="mr-2" />
               Посмотреть генераторы
             </Button>
@@ -342,6 +374,29 @@ const Index = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="gradient-color1">Цвет 1</Label>
+                        <Input 
+                          id="gradient-color1" 
+                          type="color"
+                          value={gradientColor1}
+                          onChange={(e) => setGradientColor1(e.target.value)}
+                          className="mt-2 h-12 cursor-pointer"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="gradient-color2">Цвет 2</Label>
+                        <Input 
+                          id="gradient-color2" 
+                          type="color"
+                          value={gradientColor2}
+                          onChange={(e) => setGradientColor2(e.target.value)}
+                          className="mt-2 h-12 cursor-pointer"
+                        />
+                      </div>
+                    </div>
+                    
                     <div>
                       <Label htmlFor="gradient-text">Введите текст</Label>
                       <Input 
@@ -359,10 +414,28 @@ const Index = () => {
                     </Button>
                     
                     {generatedGradient && (
-                      <div className="p-4 bg-secondary rounded-lg border border-primary/20">
-                        <Label className="text-xs text-muted-foreground mb-2 block">Результат:</Label>
-                        <code className="text-sm text-[#10B981] font-mono break-all">{generatedGradient}</code>
-                      </div>
+                      <>
+                        <div className="p-4 bg-secondary rounded-lg border border-primary/20">
+                          <Label className="text-xs text-muted-foreground mb-2 block">Результат:</Label>
+                          <code className="text-sm text-[#10B981] font-mono break-all">{generatedGradient}</code>
+                        </div>
+                        <div className="p-6 bg-secondary rounded-lg border border-primary/20">
+                          <Label className="text-xs text-muted-foreground mb-2 block">Предварительный просмотр:</Label>
+                          <div className="flex items-center justify-center mt-2">
+                            <span 
+                              className="text-3xl font-bold"
+                              style={{
+                                background: `linear-gradient(90deg, ${gradientColor1}, ${gradientColor2})`,
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text'
+                              }}
+                            >
+                              {gradientText}
+                            </span>
+                          </div>
+                        </div>
+                      </>
                     )}
                   </div>
                 </CardContent>
@@ -388,6 +461,12 @@ const Index = () => {
                           <SelectItem value="tp">Teleport (Телепорт)</SelectItem>
                           <SelectItem value="summon">Summon (Призвать моба)</SelectItem>
                           <SelectItem value="effect">Effect (Эффект)</SelectItem>
+                          <SelectItem value="luckperms-group">LuckPerms - Добавить группу</SelectItem>
+                          <SelectItem value="luckperms-perm">LuckPerms - Выдать право</SelectItem>
+                          <SelectItem value="essentials-home">Essentials - Установить дом</SelectItem>
+                          <SelectItem value="worldedit-set">WorldEdit - Заполнить блоками</SelectItem>
+                          <SelectItem value="worldguard-region">WorldGuard - Создать регион</SelectItem>
+                          <SelectItem value="gamemode">Сменить режим игры</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -579,10 +658,23 @@ const Index = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="contact-info">Контакты (Telegram, Discord, Email)</Label>
+                  <Label htmlFor="contact-method">Способ связи</Label>
+                  <Select value={contactMethod} onValueChange={setContactMethod}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="telegram">Telegram</SelectItem>
+                      <SelectItem value="vk">VK</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <Label htmlFor="contact-info">Ваш {contactMethod === 'telegram' ? 'Telegram' : 'VK'}</Label>
                   <Input 
                     id="contact-info" 
-                    placeholder="@username или email" 
+                    placeholder={contactMethod === 'telegram' ? '@username' : 'vk.com/username'}
                     className="mt-2"
                     value={contactInfo}
                     onChange={(e) => setContactInfo(e.target.value)}
@@ -695,6 +787,11 @@ const Index = () => {
             </p>
             
             <div className="flex gap-4">
+              <Button variant="ghost" size="icon" className="hover:text-primary" asChild>
+                <a href="https://vk.ru/rikawastudio" target="_blank" rel="noopener noreferrer">
+                  <Icon name="ExternalLink" size={20} />
+                </a>
+              </Button>
               <Button variant="ghost" size="icon" className="hover:text-primary">
                 <Icon name="Github" size={20} />
               </Button>

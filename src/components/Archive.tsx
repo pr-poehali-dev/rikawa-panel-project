@@ -12,56 +12,7 @@ interface ArchiveItem {
   type: string;
 }
 
-const archiveItems: ArchiveItem[] = [
-  {
-    id: 1,
-    title: 'Базовый конфиг экономики',
-    category: 'Конфиг',
-    description: 'Готовый config.yml для плагина экономики с балансировкой цен и стартовым капиталом',
-    downloads: 247,
-    type: 'yaml'
-  },
-  {
-    id: 2,
-    title: 'Команды для кастомных предметов',
-    category: 'Команды',
-    description: 'Набор команд /give для создания уникальных предметов с NBT-тегами и зачарованиями',
-    downloads: 189,
-    type: 'txt'
-  },
-  {
-    id: 3,
-    title: 'Демо-плагин HelloWorld',
-    category: 'Плагин',
-    description: 'Простой плагин-пример для изучения Spigot API. Включает команды и события',
-    downloads: 412,
-    type: 'jar'
-  },
-  {
-    id: 4,
-    title: 'Структура БД для кланов',
-    category: 'База данных',
-    description: 'SQL-схема для хранения данных кланов: участники, территории, статистика',
-    downloads: 156,
-    type: 'sql'
-  },
-  {
-    id: 5,
-    title: 'Шаблоны GUI меню',
-    category: 'Конфиг',
-    description: 'Готовые конфигурации красивых GUI-меню с иконками и описаниями',
-    downloads: 321,
-    type: 'yaml'
-  },
-  {
-    id: 6,
-    title: 'Сниппеты Kotlin для плагинов',
-    category: 'Код',
-    description: 'Полезные сниппеты на Kotlin: работа с инвентарём, БД, конфигами',
-    downloads: 93,
-    type: 'kt'
-  }
-];
+const archiveItems: ArchiveItem[] = [];
 
 const Archive = () => {
   const getIconByType = (type: string) => {
@@ -85,37 +36,49 @@ const Archive = () => {
           </p>
         </div>
         
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {archiveItems.map((item) => (
-            <Card key={item.id} className="bg-card/50 border-primary/20 hover:border-primary/50 transition-all hover:box-glow group">
-              <CardHeader>
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center group-hover:bg-primary/30 transition-colors">
-                    <Icon name={getIconByType(item.type) as any} className="text-primary" size={24} />
+        {archiveItems.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {archiveItems.map((item) => (
+              <Card key={item.id} className="bg-card/50 border-primary/20 hover:border-primary/50 transition-all hover:box-glow group">
+                <CardHeader>
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center group-hover:bg-primary/30 transition-colors">
+                      <Icon name={getIconByType(item.type) as any} className="text-primary" size={24} />
+                    </div>
+                    <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                      .{item.type}
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className="border-primary/30 text-primary text-xs">
-                    .{item.type}
-                  </Badge>
-                </div>
-                <CardTitle className="text-lg">{item.title}</CardTitle>
-                <CardDescription className="text-sm">{item.description}</CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Icon name="Download" size={14} />
-                    <span>{item.downloads} скачиваний</span>
+                  <CardTitle className="text-lg">{item.title}</CardTitle>
+                  <CardDescription className="text-sm">{item.description}</CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Icon name="Download" size={14} />
+                      <span>{item.downloads} скачиваний</span>
+                    </div>
+                    <Button size="sm" variant="outline" className="border-primary/50 hover:bg-primary/10">
+                      <Icon name="Download" size={14} className="mr-2" />
+                      Скачать
+                    </Button>
                   </div>
-                  <Button size="sm" variant="outline" className="border-primary/50 hover:bg-primary/10">
-                    <Icon name="Download" size={14} className="mr-2" />
-                    Скачать
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="bg-card/50 border-primary/20 max-w-2xl mx-auto">
+            <CardContent className="pt-12 pb-12 text-center">
+              <Icon name="Archive" size={48} className="mx-auto mb-4 text-muted-foreground opacity-50" />
+              <p className="text-muted-foreground text-lg mb-2">Архив пока пуст</p>
+              <p className="text-sm text-muted-foreground">
+                Файлы появятся после загрузки через административную панель
+              </p>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </section>
   );
